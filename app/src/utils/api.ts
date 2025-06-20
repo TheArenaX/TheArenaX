@@ -1,6 +1,10 @@
 import axios from "axios";
+import { getRuntimeEnv } from "./getRuntimeEnv";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
+const baseURL =
+  getRuntimeEnv("NEXT_PUBLIC_API_URL") ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://api.thearenax.upayan.dev";
 
 const instance = axios.create({
   baseURL,
