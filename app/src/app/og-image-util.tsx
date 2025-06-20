@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from "next/og";
 
 export interface OgImageOptions {
@@ -52,7 +53,7 @@ export function createOgImage({
           }}
         >
           <img
-            src="https://nextjs-pwa-template.upayan.dev/icon.png"
+            src="https://thearenax.upayan.dev/icon.png"
             alt="Logo"
             style={{
               width: 128,
