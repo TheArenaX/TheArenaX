@@ -7,6 +7,8 @@
     "headlessui",
     "hoverable",
     "NEXTAUTH",
+    "plpgsql",
+    "signup",
     "supabase",
     "superadmin",
     "thearenax",
