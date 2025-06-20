@@ -70,10 +70,8 @@ export default function RootLayout({
             <Sidebar />
             <LayoutWrapper>
               <Header />
-              <div id="title-bar">
-                <span>The ArenaX</span>
-              </div>
-              <div id="main-content">{children}</div>
+
+              {children}
               <InstallPWA />
               <Footer />
               <ServiceWorkerRegister />

@@ -60,7 +60,7 @@ const InstallPWA: React.FC = () => {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed inset-0 flex items-end justify-center z-50 pointer-events-none">
+    <div className="fixed inset-0 flex items-end justify-center z-100 pointer-events-none">
       <div className="pointer-events-auto mb-8 px-4 sm:px-6 py-4 rounded-xl shadow-lg bg-black border border-gray-800 flex flex-col items-center gap-4 transition-colors duration-300 w-[95vw] max-w-sm sm:max-w-md">
         <span className="text-white font-medium text-center">
           Install this app on your {deviceType} for a better experience!
