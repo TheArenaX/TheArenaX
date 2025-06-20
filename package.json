@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/TheArenaX/TheArenaX/issues"
   },
-  "homepage": "https://github.com/TheArenaX/TheArenaX#readme"
+  "homepage": "https://github.com/TheArenaX/TheArenaX#readme",
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
 }

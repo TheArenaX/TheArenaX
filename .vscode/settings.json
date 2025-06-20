@@ -1,4 +1,17 @@
 {
   "colorWheel.settings.workspaceColor": "hsl(203,59%,59%)",
-  "cSpell.words": ["buildx", "elif", "supabase", "thearenax", "tini"]
+  "cSpell.words": [
+    "buildx",
+    "elif",
+    "gsap",
+    "headlessui",
+    "hoverable",
+    "NEXTAUTH",
+    "supabase",
+    "superadmin",
+    "thearenax",
+    "tini",
+    "turbopack",
+    "upayan"
+  ]
 }
