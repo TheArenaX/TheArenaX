@@ -1,5 +1,5 @@
 import React, { InputHTMLAttributes, forwardRef } from "react";
-import { motion } from "framer-motion";
+import { motion, Easing } from "framer-motion";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -9,7 +9,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   icon?: React.ReactNode;
   helperText?: string;
   animationDuration?: number;
-  animationEasing?: number[];
+  animationEasing?: Easing | Easing[];
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -23,7 +23,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       helperText,
       disabled = false,
       animationDuration = 0.5,
-      animationEasing = [0.42, 0, 0.58, 1],
+      animationEasing = [0.42, 0, 0.58, 1] as Easing,
       ...props
     },
     ref

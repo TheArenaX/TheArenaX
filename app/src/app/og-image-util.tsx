@@ -53,7 +53,7 @@ export function createOgImage({
           }}
         >
           <img
-            src="https://thearenax.upayan.dev/icon.png"
+            src="https://github.com/TheArenaX/TheArenaX/blob/main/app/public/icon.png?raw=true"
             alt="Logo"
             style={{
               width: 128,

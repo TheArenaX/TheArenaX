@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, ReactNode, KeyboardEvent } from "react";
-import { motion } from "framer-motion";
+import { motion, Easing } from "framer-motion";
 
 interface CardProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface CardProps {
   onClick?: () => void;
   disabled?: boolean;
   animationDuration?: number;
-  animationEasing?: number[];
+  animationEasing?: Easing | Easing[];
   elevation?: 1 | 2 | 3 | 4 | 5;
   "aria-label"?: string;
 }
@@ -30,7 +30,7 @@ const Card = ({
   onClick,
   disabled = false,
   animationDuration = 0.7,
-  animationEasing = [0.42, 0, 0.58, 1],
+  animationEasing = [0.42, 0, 0.58, 1] as Easing,
   elevation = 2,
   "aria-label": ariaLabel,
 }: CardProps) => {

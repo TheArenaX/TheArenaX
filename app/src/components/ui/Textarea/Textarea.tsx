@@ -1,5 +1,5 @@
 import React, { TextareaHTMLAttributes, forwardRef } from "react";
-import { motion } from "framer-motion";
+import { motion, Easing } from "framer-motion";
 
 export interface TextareaProps
   extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -8,7 +8,7 @@ export interface TextareaProps
   className?: string;
   helperText?: string;
   animationDuration?: number;
-  animationEasing?: number[];
+  animationEasing?: Easing | Easing[];
 }
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
@@ -20,7 +20,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       helperText,
       disabled = false,
       animationDuration = 0.5,
-      animationEasing = [0.42, 0, 0.58, 1],
+      animationEasing = [0.42, 0, 0.58, 1] as Easing,
       ...props
     },
     ref

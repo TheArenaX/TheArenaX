@@ -7,7 +7,7 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Easing } from "framer-motion";
 import { FiChevronDown, FiCheck } from "react-icons/fi";
 
 export interface SelectOption {
@@ -26,7 +26,7 @@ export interface SelectProps {
   helperText?: string;
   disabled?: boolean;
   animationDuration?: number;
-  animationEasing?: number[];
+  animationEasing?: Easing | Easing[];
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -40,7 +40,7 @@ const Select: React.FC<SelectProps> = ({
   helperText,
   disabled = false,
   animationDuration = 0.5,
-  animationEasing = [0.42, 0, 0.58, 1],
+  animationEasing = [0.42, 0, 0.58, 1] as Easing,
 }) => {
   return (
     <motion.div
