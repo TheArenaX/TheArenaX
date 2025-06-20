@@ -1,0 +1,23 @@
+{
+  "name": "thearenax",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "api": "cd api && npm run dev",
+    "app": "cd app && npm run dev",
+    "build": "cd app && next build",
+    "dev": "concurrently \"npm run app\" \"npm run api\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheArenaX/TheArenaX.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/TheArenaX/TheArenaX/issues"
+  },
+  "homepage": "https://github.com/TheArenaX/TheArenaX#readme"
+}
