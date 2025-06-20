@@ -10,6 +10,7 @@ import Footer from "../components/Footer/Footer";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister/ServiceWorkerRegister";
 import AcceptCookies from "../components/AcceptCookies/AcceptCookies";
 import InstallPWA from "../components/InstallPWA/InstallPWA";
+import { ArenaBackground } from "@/components/ArenaBackground/ArenaBackground";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -70,7 +71,7 @@ export default function RootLayout({
             <Sidebar />
             <LayoutWrapper>
               <Header />
-
+              <ArenaBackground />
               {children}
               <InstallPWA />
               <Footer />
