@@ -35,8 +35,9 @@ app.use(async (req, res) => {
       template = await vite.transformIndexHtml(url, template);
       render = (await vite.ssrLoadModule("/src/entry-server.jsx")).render;
     } else {
+      // ✅ FIXED path to match Docker container layout
       template = fs.readFileSync(
-        path.resolve(__dirname, "dist/client/index.html"),
+        path.resolve(__dirname, "index.html"),
         "utf-8"
       );
       render = (await import("./dist/server/entry-server.js")).render;
@@ -47,7 +48,7 @@ app.use(async (req, res) => {
 
     res.status(200).set({ "Content-Type": "text/html" }).end(html);
   } catch (e) {
-    vite?.ssrFixStacktrace(e);
+    vite?.ssrFixStacktrace?.(e);
     console.error(e.stack);
     res.status(500).end(e.stack);
   }
