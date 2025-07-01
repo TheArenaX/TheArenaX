@@ -4,7 +4,7 @@ module.exports = {
       name: "frontend",
       cwd: "./app",
       script: "npm",
-      args: "run start",
+      args: "run serve",
       env: {
         NODE_ENV: "production",
       },
