@@ -32,9 +32,8 @@ app.use(async (req, res) => {
       template = await vite.transformIndexHtml(url, template);
       render = (await vite.ssrLoadModule("/src/entry-server.jsx")).render;
     } else {
-      // ✅ FIXED path to match Docker container layout
       template = fs.readFileSync(
-        path.resolve(__dirname, "index.html"),
+        path.resolve(__dirname, "dist/client/index.html"),
         "utf-8"
       );
       render = (await import("./dist/server/entry-server.js")).render;
