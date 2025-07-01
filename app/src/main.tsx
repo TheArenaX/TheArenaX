@@ -1,8 +1,13 @@
 import App from "./App.tsx";
 import "./index.css";
+import { BrowserRouter } from "react-router-dom";
 
 export function createApp() {
-  return <App />;
+  return (
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  );
 }
 
 // For client-side rendering

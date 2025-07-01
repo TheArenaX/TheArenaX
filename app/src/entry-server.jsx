@@ -1,7 +1,12 @@
 import { createApp } from "./main";
 import { renderToString } from "react-dom/server";
+import { StaticRouter } from "react-router-dom/server";
+import App from "./App";
 
 export async function render(url) {
-  const app = createApp();
-  return renderToString(app);
+  return renderToString(
+    <StaticRouter location={url}>
+      <App />
+    </StaticRouter>
+  );
 }
