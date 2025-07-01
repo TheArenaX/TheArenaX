@@ -1,48 +1,21 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const Wallet = () => {
+const Wallet: React.FC = () => {
   const { profile, updateWalletBalance } = useAuth();
   const [addAmount, setAddAmount] = useState('');
   const [isAddingCredits, setIsAddingCredits] = useState(false);
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState([
+    { id: 1, amount: 100, type: 'credit', date: '2024-06-10' },
+    { id: 2, amount: 50, type: 'debit', date: '2024-06-09' },
+  ]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (profile) {
-      fetchTransactions();
-    }
-  }, [profile]);
-
-  const fetchTransactions = async () => {
-    if (!profile) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('wallet_transactions')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching transactions:', error);
-        return;
-      }
-
-      setTransactions(data || []);
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleAddCredits = async () => {
     const amount = parseInt(addAmount);
@@ -201,14 +174,14 @@ const Wallet = () => {
                   {transactions.map((transaction) => (
                     <div key={transaction.id} className="flex items-center justify-between py-3 border-b border-gray-700 last:border-b-0">
                       <div className="flex items-center space-x-4">
-                        <div className={`w-3 h-3 rounded-full ${transaction.transaction_type === 'credit' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                        <div className={`w-3 h-3 rounded-full ${transaction.type === 'credit' ? 'bg-green-500' : 'bg-red-500'}`}></div>
                         <div>
-                          <div className="text-white font-medium">{transaction.description || 'Transaction'}</div>
-                          <div className="text-sm text-gray-400">{formatDate(transaction.created_at)}</div>
+                          <div className="text-white font-medium">{transaction.type === 'credit' ? 'Credit' : 'Debit'}</div>
+                          <div className="text-sm text-gray-400">{formatDate(transaction.date)}</div>
                         </div>
                       </div>
-                      <div className={`font-bold ${transaction.transaction_type === 'credit' ? 'text-green-400' : 'text-red-400'}`}>
-                        {transaction.transaction_type === 'credit' ? '+' : ''}{transaction.amount} Credits
+                      <div className={`font-bold ${transaction.type === 'credit' ? 'text-green-400' : 'text-red-400'}`}>
+                        {transaction.type === 'credit' ? '+' : ''}{transaction.amount} Credits
                       </div>
                     </div>
                   ))}

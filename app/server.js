@@ -22,7 +22,7 @@ if (!isProd) {
   );
 }
 
-app.use("*", async (req, res) => {
+app.use(async (req, res) => {
   try {
     const url = req.originalUrl;
 
@@ -51,8 +51,4 @@ app.use("*", async (req, res) => {
     console.error(e.stack);
     res.status(500).end(e.stack);
   }
-});
-
-app.listen(3000, () => {
-  console.log("Server running at http://localhost:3000");
 });

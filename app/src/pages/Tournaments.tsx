@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,80 +6,38 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { ArenaBackground } from '@/components/ArenaBackground';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const Tournaments = () => {
-  const { isAuthenticated, profile, updateWalletBalance } = useAuth();
+const Tournaments: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [gameFilter, setGameFilter] = useState('all');
   const [feeFilter, setFeeFilter] = useState('all');
-  const [tournaments, setTournaments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchTournaments();
-  }, []);
-
-  const fetchTournaments = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('tournaments')
-        .select('*')
-        .order('start_time', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching tournaments:', error);
-        toast.error('Failed to load tournaments');
-        return;
-      }
-
-      setTournaments(data || []);
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to load tournaments');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [tournaments] = useState([
+    { id: 1, name: 'Mock Tournament 1', start_time: '2024-06-15', participants: 10 },
+    { id: 2, name: 'Mock Tournament 2', start_time: '2024-06-20', participants: 8 },
+  ]);
+  const [loading, setLoading] = useState(false);
 
   const filteredTournaments = tournaments.filter(tournament => {
-    const matchesSearch = tournament.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tournament.game.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesGame = gameFilter === 'all' || tournament.game === gameFilter;
+    const matchesSearch = tournament.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesGame = gameFilter === 'all' || tournament.name.toLowerCase().includes(gameFilter.toLowerCase());
     const matchesFee = feeFilter === 'all' || 
-                      (feeFilter === 'low' && tournament.entry_fee <= 30) ||
-                      (feeFilter === 'medium' && tournament.entry_fee > 30 && tournament.entry_fee <= 70) ||
-                      (feeFilter === 'high' && tournament.entry_fee > 70);
+                      (feeFilter === 'low' && tournament.participants <= 30) ||
+                      (feeFilter === 'medium' && tournament.participants > 30 && tournament.participants <= 70) ||
+                      (feeFilter === 'high' && tournament.participants > 70);
     
     return matchesSearch && matchesGame && matchesFee;
   });
 
   const handleJoinTournament = async (tournament: any) => {
-    if (!isAuthenticated) {
-      toast.error('Please login to join tournaments');
-      return;
-    }
-
-    if (!profile || profile.wallet_balance < tournament.entry_fee) {
-      toast.error('Insufficient credits');
-      return;
-    }
-
-    if (tournament.status === 'full') {
+    if (tournament.participants === 10) {
       toast.error('Tournament is full');
       return;
     }
 
     try {
       // Check if user is already registered
-      const { data: existingParticipant } = await supabase
-        .from('tournament_participants')
-        .select('id')
-        .eq('tournament_id', tournament.id)
-        .eq('user_id', profile.id)
-        .single();
+      const existingParticipant = tournaments.find(t => t.id === tournament.id);
 
       if (existingParticipant) {
         toast.error('You are already registered for this tournament');
@@ -87,45 +45,10 @@ const Tournaments = () => {
       }
 
       // Join tournament
-      const { error: joinError } = await supabase
-        .from('tournament_participants')
-        .insert({
-          tournament_id: tournament.id,
-          user_id: profile.id
-        });
+      const newTournament = { ...tournament, participants: tournament.participants + 1 };
+      const updatedTournaments = [...tournaments, newTournament];
 
-      if (joinError) {
-        console.error('Error joining tournament:', joinError);
-        toast.error('Failed to join tournament');
-        return;
-      }
-
-      // Update wallet balance
-      const newBalance = profile.wallet_balance - tournament.entry_fee;
-      const { error: walletError } = await supabase
-        .from('profiles')
-        .update({ wallet_balance: newBalance })
-        .eq('id', profile.id);
-
-      if (walletError) {
-        console.error('Error updating wallet:', walletError);
-        toast.error('Failed to update wallet');
-        return;
-      }
-
-      // Create transaction record
-      await supabase
-        .from('wallet_transactions')
-        .insert({
-          user_id: profile.id,
-          amount: -tournament.entry_fee,
-          transaction_type: 'debit',
-          description: `${tournament.title} Entry Fee`
-        });
-
-      updateWalletBalance(newBalance);
-      toast.success(`Successfully joined ${tournament.title}!`);
-      fetchTournaments(); // Refresh tournaments
+      toast.success(`Successfully joined ${tournament.name}!`);
     } catch (error) {
       console.error('Error:', error);
       toast.error('Failed to join tournament');
@@ -138,10 +61,10 @@ const Tournaments = () => {
   };
 
   const getStatusBadge = (tournament: any) => {
-    if (tournament.status === 'full') {
+    if (tournament.participants === 10) {
       return <Badge variant="destructive">Full</Badge>;
     }
-    if (tournament.current_participants / tournament.max_participants > 0.8) {
+    if (tournament.participants / 10 > 0.8) {
       return <Badge variant="outline" className="border-yellow-500 text-yellow-500">Almost Full</Badge>;
     }
     return <Badge variant="outline" className="border-green-500 text-green-500">Open</Badge>;
@@ -225,45 +148,36 @@ const Tournaments = () => {
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-lg sm:text-xl font-bold text-white mb-1">{tournament.title}</h3>
-                      <p className="text-sm text-gray-400">{tournament.game}</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-white mb-1">{tournament.name}</h3>
                     </div>
                     <Badge
-                      variant={tournament.status === 'open' ? 'default' : tournament.status === 'full' ? 'secondary' : 'destructive'}
+                      variant={tournament.participants === 10 ? 'destructive' : tournament.participants / 10 > 0.8 ? 'outline' : 'outline'}
                       className="ml-2"
                     >
-                      {tournament.status}
+                      {tournament.participants === 10 ? 'Full' : tournament.participants / 10 > 0.8 ? 'Almost Full' : 'Open'}
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-400 mb-4 line-clamp-2">{tournament.description}</p>
+                  <p className="text-sm text-gray-400 mb-4 line-clamp-2">Mock tournament description</p>
                   <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <p className="text-xs text-gray-500">Entry Fee</p>
-                      <p className="text-sm font-medium text-white">{tournament.entryFee} Credits</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Prize Pool</p>
-                      <p className="text-sm font-medium text-white">₹{tournament.prizePool}</p>
-                    </div>
                     <div>
                       <p className="text-xs text-gray-500">Participants</p>
                       <p className="text-sm font-medium text-white">
-                        {tournament.currentParticipants}/{tournament.maxParticipants}
+                        {tournament.participants}/{10}
                       </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Start Time</p>
                       <p className="text-sm font-medium text-white">
-                        {new Date(tournament.startTime).toLocaleDateString()}
+                        {formatDate(tournament.start_time)}
                       </p>
                     </div>
                   </div>
                   <Button
                     className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
                     onClick={() => handleJoinTournament(tournament)}
-                    disabled={tournament.status !== 'open'}
+                    disabled={tournament.participants === 10}
                   >
-                    {tournament.status === 'open' ? 'Join Tournament' : 'Tournament Closed'}
+                    {tournament.participants === 10 ? 'Tournament Closed' : 'Join Tournament'}
                   </Button>
                 </CardContent>
               </Card>
