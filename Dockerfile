@@ -1,54 +1,51 @@
-# ---------- Stage 1: Install frontend dependencies ----------
-FROM node:23-alpine AS deps-app
-WORKDIR /app
-
-# Install dependencies only (cached unless package.json changes)
-COPY app/package.json app/package-lock.json* ./
-RUN npm ci
-
-# ---------- Stage 2: Build the frontend ----------
-FROM deps-app AS build-app
-# Copy frontend source code and build
-COPY app/ ./
-RUN npm run build
-
-# ---------- Stage 3: Install backend dependencies ----------
+# ---------- Stage 1: deps for backend ----------
 FROM node:23-alpine AS deps-api
 WORKDIR /api
-
-# Install backend dependencies only
-COPY api/package.json api/package-lock.json* ./
+COPY api/package*.json ./
 RUN npm ci
 
-# ---------- Stage 4: Build the backend ----------
+# ---------- Stage 2: deps for frontend ----------
+FROM node:23-alpine AS deps-app
+WORKDIR /app
+COPY app/package*.json ./
+RUN npm ci
+
+# ---------- Stage 3: build backend ----------
 FROM deps-api AS build-api
-# Copy backend source code and build
 COPY api/ ./
 RUN npm run build
 
-# ---------- Stage 5: Final runtime image ----------
+# ---------- Stage 4: build frontend ----------
+FROM deps-app AS build-app
+COPY app/ ./
+RUN npm run build
+
+# ---------- Stage 5: Final runtime ----------
 FROM node:23-alpine AS runner
 
-# Install tini for proper signal handling
+# Install tini & pm2
 RUN apk add --no-cache tini
-
-# Install PM2 globally to run both frontend and backend
 RUN npm install -g pm2
 
+# Create workspace
 WORKDIR /workspace
 
-# Copy built frontend and backend from build stages
-COPY --from=build-app /app ./app
+# Copy frontend build, SSR server, and runtime deps
+COPY --from=build-app /app/dist ./app/dist
+COPY --from=build-app /app/index.html ./app/index.html
+COPY --from=build-app /app/server.js ./app/server.js
+COPY --from=build-app /app/node_modules ./app/node_modules
+COPY --from=build-app /app/package.json ./app/package.json
+
+# Copy backend build
 COPY --from=build-api /api ./api
 
-# Copy PM2 ecosystem config
+# Copy PM2 config and logs folder
 COPY ecosystem.config.js ./
+RUN mkdir -p ./logs
 
-# Expose frontend and backend ports
+# Expose ports
 EXPOSE 3000 5000
 
-# Use tini as init system to handle signals properly
 ENTRYPOINT ["/sbin/tini", "--"]
-
-# Start both processes using PM2
 CMD ["pm2-runtime", "start", "ecosystem.config.js"]
