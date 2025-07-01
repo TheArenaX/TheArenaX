@@ -16,10 +16,7 @@ if (!isProd) {
   });
   app.use(vite.middlewares);
 } else {
-  app.use(
-    "/assets",
-    express.static(path.resolve(__dirname, "dist/client/assets"))
-  );
+  app.use(express.static(path.resolve(__dirname, "dist/client")));
 }
 
 app.use(async (req, res) => {
