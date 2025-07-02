@@ -32,7 +32,6 @@ WORKDIR /workspace
 
 # Copy frontend build, SSR server, and runtime deps
 COPY --from=build-app /app/dist ./app/dist
-COPY --from=build-app /app/dist/server ./app/dist/server
 COPY --from=build-app /app/index.html ./app/index.html
 COPY --from=build-app /app/server.js ./app/server.js
 COPY --from=build-app /app/node_modules ./app/node_modules
